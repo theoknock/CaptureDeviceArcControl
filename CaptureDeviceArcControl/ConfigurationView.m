@@ -110,7 +110,7 @@ static UIButton * (^(^CaptureDeviceConfigurationPropertyButtons)(NSArray<NSArray
         __block UIBezierPath * bezier_quad_curve;
         
         return ^ (CGFloat radius, CGFloat scale) {
-            radius = CGRectGetMaxX(self.bounds) - (fmax(CGRectGetMinX(self.bounds), fminf(CGRectGetMaxX(self.bounds), radius)));
+            radius = CGRectGetMaxX(self.bounds) - (fmax(CGRectGetMinX(self.bounds) + 22.5, fminf(CGRectGetMaxX(self.bounds) - 11.125, radius)));
             bezier_quad_curve = [UIBezierPath bezierPathWithArcCenter:CGPointMake(CGRectGetMaxX(self.bounds),
                                                                                   CGRectGetMaxY(self.bounds))
                                                                radius:radius startAngle:degreesToRadians(270.0) endAngle:degreesToRadians(180.0) clockwise:FALSE];
