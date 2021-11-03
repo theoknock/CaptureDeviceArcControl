@@ -14,81 +14,6 @@
     void(^arc_control_attributes_guide)(CGFloat);
 }
 
-static UIButton * (^(^CaptureDeviceConfigurationPropertyButtons)(NSArray<NSArray<NSString *> *> * const, CAShapeLayer *))(CaptureDeviceConfigurationControlProperty) = ^ (NSArray<NSArray<NSString *> *> * const captureDeviceConfigurationControlPropertyImageNames, CAShapeLayer * shape_layer) {
-    CGFloat button_boundary_length = (CGRectGetMaxX(UIScreen.mainScreen.bounds) - CGRectGetMinX(UIScreen.mainScreen.bounds)) / ((CGFloat)captureDeviceConfigurationControlPropertyImageNames[0].count - 1.0);
-    __block NSMutableArray<UIButton *> * buttons = [[NSMutableArray alloc] initWithCapacity:captureDeviceConfigurationControlPropertyImageNames[0].count];
-    [captureDeviceConfigurationControlPropertyImageNames[0] enumerateObjectsUsingBlock:^(NSString * _Nonnull imageName, NSUInteger idx, BOOL * _Nonnull stop) {
-        [buttons addObject:^ (CaptureDeviceConfigurationControlProperty property) {
-            UIButton * button;
-            [button = [UIButton new] setTag:property];
-            
-            [button setBackgroundColor:[UIColor clearColor]];
-            [button setShowsTouchWhenHighlighted:TRUE];
-            
-            [button setImage:[UIImage systemImageNamed:captureDeviceConfigurationControlPropertyImageNames[0][idx] withConfiguration:CaptureDeviceConfigurationControlPropertySymbolImageConfiguration(CaptureDeviceConfigurationControlStateDeselected)] forState:UIControlStateNormal];
-            [button setImage:[UIImage systemImageNamed:captureDeviceConfigurationControlPropertyImageNames[1][idx] withConfiguration:CaptureDeviceConfigurationControlPropertySymbolImageConfiguration(CaptureDeviceConfigurationControlStateSelected)] forState:UIControlStateSelected];
-            
-            [button sizeToFit];
-            CGSize button_size = [button intrinsicContentSize];
-            [button setFrame:CGRectMake(0.0, 0.0,
-                                        button_size.width, button_size.height)];
-            [button setCenter:CGPointMake(button_boundary_length * property,
-                                          CGRectGetMidY(UIScreen.mainScreen.bounds))];
-            
-            //            [button setEventHandlerBlock:^ {
-            //                BezierQuadCurveControlPoints bezier_quad_curve_plot_points = bezier_quad_curve_control_points(
-            //                                                                                                    NSMakeRange(CGRectGetMinX(UIScreen.mainScreen.bounds), (CGRectGetMaxX(UIScreen.mainScreen.bounds) - CGRectGetMinX(UIScreen.mainScreen.bounds))),
-            //                                                                                                    NSMakeRange(CGRectGetMidY(UIScreen.mainScreen.bounds) + (button_size.height / 2.0), -button_size.height * 2.0/*CGRectGetMinY(UIScreen.mainScreen.bounds))*/),
-            //                                                                                                    button_boundary_length * property,
-            //                                                                                                    NSMakeRange(CGRectGetMinX(UIScreen.mainScreen.bounds), (CGRectGetMaxX(UIScreen.mainScreen.bounds) - CGRectGetMinX(UIScreen.mainScreen.bounds)))
-            //                                                                                                    );
-            //                BezierQuadCurvePoint bezier_quad_curve_point_position = bezier_quad_curve(bezier_quad_curve_plot_points);
-            //
-            //                CGMutablePathRef quad_curve_path = ^ CGMutablePathRef (NSValue * p) {
-            //                    BezierQuadCurveControlPoints points;
-            //                    [p getValue:&points];
-            //                    UIBezierPath * quad_curve = [UIBezierPath bezierPath];
-            //                    [quad_curve moveToPoint:points.start_point];
-            //                    [quad_curve addQuadCurveToPoint:points.end_point controlPoint:points.control_point];
-            //                    return quad_curve.CGPath;
-            //                }(bezier_quad_curve_plot_points());
-            //
-            //                const CGRect rects[] = { /*CGPathGetBoundingBox(quad_curve_path),*/ CGPathGetPathBoundingBox(quad_curve_path) };
-            //                NSUInteger count = sizeof(rects) / sizeof(CGRect);
-            //                CGPathAddRects(quad_curve_path, NULL, rects, count);
-            //
-            //                [(CAShapeLayer *)shape_layer setStrokeColor:[UIColor whiteColor].CGColor];
-            //                [(CAShapeLayer *)shape_layer setFillColor:[UIColor clearColor].CGColor];
-            //                [(CAShapeLayer *)shape_layer setLineWidth:0.5];
-            //                [(CAShapeLayer *)shape_layer setPath:quad_curve_path];
-            //
-            //
-            //                for (UIButton * b in buttons) {
-            //                    [b setSelected:(b.tag == [buttons objectAtIndex:property].tag) ? TRUE : FALSE];
-            //                    CGFloat t_position = button_boundary_length * b.tag;
-            //                    CGPoint position = bezier_quad_curve_point_position(t_position);
-            ////                    CGFloat x = rescale(position.x,
-            ////                                        CGRectGetMinX(UIScreen.mainScreen.bounds),
-            ////                                        CGRectGetMinX(UIScreen.mainScreen.bounds) + ((CGRectGetMaxX(UIScreen.mainScreen.bounds) - CGRectGetMinX(UIScreen.mainScreen.bounds))),
-            ////                                        t_position,
-            ////                                        CGRectGetMinX(UIScreen.mainScreen.bounds) + ((CGRectGetMaxX(UIScreen.mainScreen.bounds) - CGRectGetMinX(UIScreen.mainScreen.bounds))));
-            //                    [UIView animateWithDuration:0.2 animations:^{
-            //                        [b setCenter:CGPointMake(position.x, CGRectGetMidY(UIScreen.mainScreen.bounds))];
-            //                    }];
-            //                }
-            //            }];
-            //            [button addTarget:button.eventHandlerBlock action:@selector(invoke) forControlEvents:(UIControlEvents)UIControlEventTouchUpInside];
-            
-            return ^ UIButton * (void) {
-                return button;
-            };
-        }((CaptureDeviceConfigurationControlProperty)idx)()];
-    }];
-    return ^ UIButton * (CaptureDeviceConfigurationControlProperty property) {
-        return [buttons objectAtIndex:property];
-    };
-};
-
 + (Class)layerClass {
     return [CAShapeLayer class];
 }
@@ -132,7 +57,7 @@ static UIButton * (^(^CaptureDeviceConfigurationPropertyButtons)(NSArray<NSArray
         };
     }((CAShapeLayer *)[self layer]);
     
-    arc_control_attributes_guide((CGRectGetMidX(self.bounds) + CGRectGetMinX(self.bounds)) / 2.0);
+    arc_control_attributes_guide([self userArcControlConfiguration]);
 }
 
 // To-Do: Keep circle at current radius on touchesBegan, adding or subtracting the value of the touch point (makes it easier to make adjustments to the arc control radius when the drag-target is range-wide and prevents jumping from the current radius to the finger location)
@@ -159,26 +84,42 @@ static UIButton * (^(^CaptureDeviceConfigurationPropertyButtons)(NSArray<NSArray
     UITouch * touch = (UITouch *)touches.anyObject;
     CGPoint touch_point = CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:touch.view].x)),
                                       fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:touch.view].y));
-    arc_control_attributes_guide(touch_point.x);
+    arc_control_attributes_guide([self setUserArcControlConfiguration:touch_point.x]);
+}
+
+- (NSString *)userArcControlConfigurationFileName {
+    NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString * documentsDirectory = [paths objectAtIndex:0];
+    NSString * fileName = [NSString stringWithFormat:@"%@/arc_control_configuration.dat", documentsDirectory];
     
-//    [self.layer setAnchorPoint:CGPointMake(0.5,
-//                                           0.5)];
-//    [UIView animateWithDuration:2.0 animations:^{
-//        NSString * kAnimationKey = @"rotation";
-//
-//        if ([self.layer animationForKey:kAnimationKey] == nil) {
-//            CABasicAnimation * animate = [CABasicAnimation animationWithKeyPath:@"transform.rotation"];
-//            animate.duration = 2.0;
-//            animate.repeatCount = 1.0;
-//            animate.fromValue = @(0.0);
-//            animate.toValue = @((M_PI * 2.0));
-//            [self.layer addAnimation:animate forKey:kAnimationKey];
-//        }
-        
-        //        self.transform = CGAffineTransformMakeScale(1, -1);
-        //        CGFloat angle = M_PI_4 * 2.0;
-        //       self.transform = CGAffineTransformRotate(CGAffineTransformIdentity, angle);
-//    }];
+    return fileName;
+}
+
+- (CGFloat)userArcControlConfiguration {
+    CGFloat radius = (CGRectGetMidX(self.bounds) + CGRectGetMinX(self.bounds)) / 2.0;
+    __autoreleasing NSError * error = nil;
+    NSData *structureData = [[NSData alloc] initWithContentsOfFile:[self userArcControlConfigurationFileName] options:NSDataReadingUncached error:&error];
+    if (!error) {
+        NSDictionary<NSString *, NSNumber *> * structureDataAsDictionary = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSDictionary class] fromData:structureData error:&error];
+        radius = [(NSNumber *)[structureDataAsDictionary objectForKey:@"PreferredArcRadius"] floatValue];
+    }
+    if (error) printf("\nERROR\t\t%s\n", [[error description] UTF8String]);
+    
+    return radius;
+}
+
+- (CGFloat)setUserArcControlConfiguration:(CGFloat)radius {
+    NSDictionary<NSString *, NSNumber *> * structureDataAsDictionary = [NSDictionary dictionaryWithObjectsAndKeys:[NSNumber numberWithFloat:radius], @"PreferredArcRadius", nil];
+    __autoreleasing NSError * error = nil;
+    NSData *structureData = [NSKeyedArchiver archivedDataWithRootObject:structureDataAsDictionary requiringSecureCoding:FALSE error:&error];
+    if (!error) {
+        ([structureData writeToFile:[self userArcControlConfigurationFileName] options:NSDataWritingAtomic error:&error]) ?
+        ^{ printf("\nThe control-points preferences were saved to %s\n", [[self userArcControlConfigurationFileName] UTF8String]); }() :
+        ^{ printf("\nThe control-points preferences were not saved\n"); }();
+    }
+    if (error) printf("\nERROR\t\t%s\n", [[error description] UTF8String]);
+    
+    return radius;
 }
 
 @end
