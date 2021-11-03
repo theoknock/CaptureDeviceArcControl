@@ -18,6 +18,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		B9036C96273206C100D4A6A7 /* CaptureDeviceConfigurationPropertyResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureDeviceConfigurationPropertyResources.h; sourceTree = "<group>"; };
 		B90D62BF2731AB9600DA81AA /* CaptureDeviceArcControl.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CaptureDeviceArcControl.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B90D62C22731AB9600DA81AA /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B90D62C32731AB9600DA81AA /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -64,6 +65,7 @@
 		B90D62C12731AB9600DA81AA /* CaptureDeviceArcControl */ = {
 			isa = PBXGroup;
 			children = (
+				B9036C96273206C100D4A6A7 /* CaptureDeviceConfigurationPropertyResources.h */,
 				B90D62C22731AB9600DA81AA /* AppDelegate.h */,
 				B90D62C32731AB9600DA81AA /* AppDelegate.m */,
 				B90D62C52731AB9600DA81AA /* SceneDelegate.h */,
