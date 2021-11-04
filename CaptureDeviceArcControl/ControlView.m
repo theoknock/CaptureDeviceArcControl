@@ -47,7 +47,7 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
     CGRect bounds = [layer bounds];
     CGContextTranslateCTM(ctx, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
     
-    for (int t = 0; t < 360; t++) {
+    for (int t = degrees; t < 360; t++) {
         CGFloat angle = degreesToRadians(t);
         CGFloat tick_height = (t == 0 || t == 359) ? 10.0 : (t % 10 == 0) ? 6.0 : 3.0;
         {
@@ -72,7 +72,7 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
             degrees_ref(^ {
 //                printf("\n%s\n", __PRETTY_FUNCTION__);
                 [(CAShapeLayer *)self.layer display];
-            }, (360.0))();
+            }, (0.0))();
             
         })();
         
@@ -87,7 +87,7 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
     }, (CGFloat)rescale(^ CGPoint (UITouch * touch) {
         return CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:self].x)),
                            fmaxf(CGRectGetMinY(touch.view.bounds), fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:self].y)));
-    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 360.0))();
+    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 359.0))();
 }
 
 // To-Do: Gradually inch the edge of the circle to the finger if the finger is not on the edge while dragging (the finger should eventually be connected to the edge of the circle, but not in one jump)
@@ -98,7 +98,7 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
     }, (CGFloat)rescale(^ CGPoint (UITouch * touch) {
         return CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:self].x)),
                            fmaxf(CGRectGetMinY(touch.view.bounds), fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:self].y)));
-    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 360.0))();
+    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 359.0))();
 }
 
 // To-Do: Animate the edge of the circle meeting the finger is dragging is offset (the edge of the circle should meet where the finger was lifted (?))
@@ -109,7 +109,7 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
     }, (CGFloat)rescale(^ CGPoint (UITouch * touch) {
         return CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:self].x)),
                            fmaxf(CGRectGetMinY(touch.view.bounds), fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:self].y)));
-    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 360.0))();
+    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 359.0))();
 }
 
 @end
