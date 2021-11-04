@@ -42,25 +42,21 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
 
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx {
     printf("\n%s\t\tdegrees == %f\t\tarca_control_radius == %f\n", __PRETTY_FUNCTION__, degrees, arc_control_radius);
-    //    arc_control_radius -= 42.0;
+    CGFloat modified_arc_control_radius = arc_control_radius - 42.0;
     
-    CGRect bounds = [layer bounds];
+    CGRect bounds = [self bounds];
     CGContextTranslateCTM(ctx, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
-    if (degrees > 180) {
-        degrees -= 360;
-        } else if (degrees < -180) {
-            degrees += 360;
-        }
+    
     for (int t = 0; t <= 100; t++) {
-        CGFloat scaled_degrees = t * (90.0 / 100.0);
+        CGFloat scaled_degrees = t * (45.0 / 100.0);
         CGFloat angle  = degrees + degreesToRadians(scaled_degrees);
         
         CGFloat tick_height = (t % 10 == 0) ? 6.0 : 3.0;
         {
-            CGPoint xy_outer = CGPointMake(CGRectGetMaxX(bounds) - ((arc_control_radius + tick_height) * sinf(angle)),
-                                           CGRectGetMaxY(bounds) - ((arc_control_radius + tick_height) * cosf(angle))); // To-Do: Remove degreesToRadians(scaled_degrees) when rotating
-            CGPoint xy_inner = CGPointMake(CGRectGetMaxX(bounds) - ((arc_control_radius - tick_height) * sinf(angle)),
-                                           CGRectGetMaxY(bounds) - ((arc_control_radius - tick_height) * cosf(angle)));
+            CGPoint xy_outer = CGPointMake(CGRectGetMaxX(bounds) - fabs((modified_arc_control_radius + tick_height) * sinf(angle)),
+                                           CGRectGetMaxY(bounds) - fabs((modified_arc_control_radius + tick_height) * cosf(angle)));
+            CGPoint xy_inner = CGPointMake(CGRectGetMaxX(bounds) - fabs((modified_arc_control_radius - tick_height) * sinf(angle)),
+                                           CGRectGetMaxY(bounds) - fabs((modified_arc_control_radius - tick_height) * cosf(angle)));
             
             CGContextSetStrokeColorWithColor(ctx, [[UIColor systemBlueColor] CGColor]);
             CGContextSetLineWidth(ctx, (t % 10 == 0) ? 0.625 : 0.3125);
@@ -79,7 +75,7 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
                 printf("\n%s\n", __PRETTY_FUNCTION__);
                 
                 [(CAShapeLayer *)self.layer display];
-            }, (CGFloat)degreesToRadians(180.0))();
+            }, (CGFloat)degreesToRadians(270.0))();
             
         })();
         
@@ -91,10 +87,10 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     degrees_ref(^ {
         [(CAShapeLayer *)self.layer setNeedsDisplay];
-    }, (CGFloat)degreesToRadians(rescale(CGRectGetMaxX(self.bounds) - ^ CGPoint (UITouch * touch) {
+    }, (CGFloat)degreesToRadians(rescale(^ CGPoint (UITouch * touch) {
         return CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:self].x)),
                            fmaxf(CGRectGetMinY(touch.view.bounds), fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:self].y)));
-    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 360.0)))();
+    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds)*2.0, 270.0, 360.0)))();
 }
 
 // To-Do: Gradually inch the edge of the circle to the finger if the finger is not on the edge while dragging (the finger should eventually be connected to the edge of the circle, but not in one jump)
@@ -102,10 +98,10 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     degrees_ref(^ {
         [(CAShapeLayer *)self.layer setNeedsDisplay];
-    }, (CGFloat)degreesToRadians(rescale(CGRectGetMaxX(self.bounds) - ^ CGPoint (UITouch * touch) {
+    }, (CGFloat)degreesToRadians(rescale(^ CGPoint (UITouch * touch) {
         return CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:self].x)),
                            fmaxf(CGRectGetMinY(touch.view.bounds), fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:self].y)));
-    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 360.0)))();
+    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds)*2.0, 270.0, 360.0)))();
 }
 
 // To-Do: Animate the edge of the circle meeting the finger is dragging is offset (the edge of the circle should meet where the finger was lifted (?))
@@ -113,10 +109,10 @@ dispatch_block_t (^degrees_ref)(dispatch_block_t, CGFloat) = ^ (dispatch_block_t
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event {
     degrees_ref(^ {
         [(CAShapeLayer *)self.layer setNeedsDisplay];
-    }, (CGFloat)degreesToRadians(rescale(CGRectGetMaxX(self.bounds) - ^ CGPoint (UITouch * touch) {
+    }, (CGFloat)degreesToRadians(rescale(^ CGPoint (UITouch * touch) {
         return CGPointMake(fmaxf(CGRectGetMinX(touch.view.bounds), fminf(CGRectGetMaxX(touch.view.bounds), [touch locationInView:self].x)),
                            fmaxf(CGRectGetMinY(touch.view.bounds), fminf(CGRectGetMaxY(touch.view.bounds), [touch locationInView:self].y)));
-    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds), 0.0, 360.0)))();
+    }((UITouch *)touches.anyObject).x, CGRectGetMinX(self.bounds), CGRectGetMaxX(self.bounds)*2.0, 270.0, 360.0)))();
 }
 
 @end
