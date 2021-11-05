@@ -57,20 +57,20 @@ static CGRect (^arc_control_bounds_ref)(CGRect) = ^ CGRect (CGRect parent_rect) 
  */
 
 typedef struct __attribute__((objc_boxable)) ArcDegreesMeasurements ArcDegreesMeasurements;
-typedef NSUInteger (^(^ArcDegreesMeasurementsRadius)(void))(void);
-typedef NSUInteger (^(^ArcDegreesMeasurementsEnd)(void))(void);
+typedef CGFloat (^(^ArcDegreesMeasurementsRadius)(void))(void);
+typedef CGFloat (^(^ArcDegreesMeasurementsEnd)(void))(void);
 static struct __attribute__((objc_boxable)) ArcDegreesMeasurements
 {
     __unsafe_unretained ArcDegreesMeasurementsRadius radius;
-    NSUInteger start;
-    NSUInteger length;
+    CGFloat start;
+    CGFloat length;
     __unsafe_unretained ArcDegreesMeasurementsEnd end;
     NSUInteger sectors;
 } arcDegreesMeasurements = {
     .radius = ^ {
         return ^ (CGFloat(^radius_user_preferences)(void)) {
-            return ^ NSUInteger (void) {
-                return (NSUInteger)radius_user_preferences();
+            return ^ CGFloat (void) {
+                return radius_user_preferences();
             };
         }(^ CGFloat {
             NSArray * paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
@@ -88,16 +88,16 @@ static struct __attribute__((objc_boxable)) ArcDegreesMeasurements
             }
         });
     },
-        .start = 0,
-        .length = 360,
+        .start = 0.0,
+        .length = 360.0,
         .end = ^ {
             return ^ (ArcDegreesMeasurements * arc_degree_measurements) {
-                return ^ NSUInteger (void) {
-                    return (NSUInteger)radiansToDegrees(degreesToRadians(arc_degree_measurements->start) + degreesToRadians(arc_degree_measurements->length));
+                return ^ CGFloat (void) {
+                    return (CGFloat)radiansToDegrees(degreesToRadians(arc_degree_measurements->start) + degreesToRadians(arc_degree_measurements->length));
                 };
             }(&arcDegreesMeasurements);
         },
-        .sectors = 100
+        .sectors = 10
 };
 
 - (void)drawLayer:(CALayer *)layer inContext:(CGContextRef)ctx {
@@ -106,10 +106,10 @@ static struct __attribute__((objc_boxable)) ArcDegreesMeasurements
     CGRect bounds = [layer bounds];
     CGContextTranslateCTM(ctx, CGRectGetMinX(bounds), CGRectGetMinY(bounds));
     
-    for (NSUInteger t = arcDegreesMeasurements.start; t <= arcDegreesMeasurements.end()(); t++) {
+    for (NSUInteger t = (NSUInteger)arcDegreesMeasurements.start; t <= (NSUInteger)arcDegreesMeasurements.end()(); t++) {
         CGFloat angle = degreesToRadians(t);
         
-        CGFloat tick_height = (t == arcDegreesMeasurements.start || t == arcDegreesMeasurements.length) ? 10.0 : (t % arcDegreesMeasurements.sectors == 0) ? 6.0 : 3.0;
+        CGFloat tick_height = (t == (NSUInteger)arcDegreesMeasurements.start || t == (NSUInteger)arcDegreesMeasurements.end()()) ? 10.0 : (t % arcDegreesMeasurements.sectors == 0) ? 6.0 : 3.0;
         {
             CGPoint xy_outer = CGPointMake(((modified_arc_control_radius + tick_height) * cosf(angle)),
                                            ((modified_arc_control_radius + tick_height) * sinf(angle)));
